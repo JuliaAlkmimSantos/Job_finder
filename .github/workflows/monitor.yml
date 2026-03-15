@@ -1,0 +1,33 @@
+name: Job Monitor
+
+on:
+  schedule:
+    - cron: '0 9,21 * * *'  # runs at 9am and 9pm UTC daily
+  workflow_dispatch:          # allows manual trigger
+
+jobs:
+  check-jobs:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - run: pip install -r requirements.txt
+
+      - name: Run monitor
+        env:
+          EMAIL_ADDRESS: ${{ secrets.EMAIL_ADDRESS }}
+          EMAIL_PASSWORD: ${{ secrets.EMAIL_PASSWORD }}
+        run: python monitor.py
+
+      - name: Commit updated hashes
+        run: |
+          git config user.name "github-actions"
+          git config user.email "actions@github.com"
+          git add page_hashes.json
+          git diff --cached --quiet || git commit -m "Update hashes"
+          git push
