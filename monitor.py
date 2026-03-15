@@ -73,8 +73,3 @@ def check_for_changes():
 
 if __name__ == "__main__":
     check_for_changes()
-```
-
-**`requirements.txt`**:
-```
-requests
