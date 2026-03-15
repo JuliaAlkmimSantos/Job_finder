@@ -66,10 +66,7 @@ def check_for_changes():
 
     save_hashes(new_hashes)
 
-    if changed:
-        send_email(changed)
-    else:
-        print("No changes detected.")
+    send_email(["Test email from job monitor"])
 
 if __name__ == "__main__":
     check_for_changes()
