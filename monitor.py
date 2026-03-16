@@ -19,8 +19,7 @@ TARGETS = {
     'World Resources Institute Jobs': "https://www.wri.org/careers/jobs",
     'Nature Serve Jobs': "https://www.natureserve.org/careers"
     'EDF jobs': "https://www.edf.org/jobs",
-    'Felt jobs': "https://felt.com/careers",
-}
+    'Felt jobs': "https://felt.com/careers"}
 
 # These load content via plain HTML or return JSON directly
 STATIC_URLS = {"Gridware jobs", "Green Jobs board GIS", "Green Jobs board Data"}
