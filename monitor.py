@@ -17,7 +17,7 @@ TARGETS = {
     "Pano AI jobs": "https://jobs.ashbyhq.com/pano-ai",
     "Gridware jobs": "https://api.lever.co/v0/postings/gridware",
     'World Resources Institute Jobs': "https://www.wri.org/careers/jobs",
-    'Nature Serve Jobs': "https://www.natureserve.org/careers"
+    'Nature Serve Jobs': "https://www.natureserve.org/careers",
     'EDF jobs': "https://www.edf.org/jobs",
     'Felt jobs': "https://felt.com/careers"}
 
