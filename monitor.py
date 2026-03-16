@@ -6,6 +6,41 @@ import smtplib
 from email.mime.text import MIMEText
 from playwright.sync_api import sync_playwright
 
+import re
+from bs4 import BeautifulSoup
+
+def clean_content(html, org):
+    """
+    Strip dynamic elements and extract only job-relevant content.
+    Returns cleaned text for hashing.
+    """
+    soup = BeautifulSoup(html, "html.parser")
+
+    # Remove elements that change every load
+    for tag in soup.find_all("script"):
+        tag.decompose()
+    for tag in soup.find_all("style"):
+        tag.decompose()
+    for tag in soup.find_all("noscript"):
+        tag.decompose()
+    for tag in soup.find_all("iframe"):
+        tag.decompose()
+    for tag in soup.find_all("meta"):
+        tag.decompose()
+    for tag in soup.find_all("link"):
+        tag.decompose()
+
+    # Get visible text only
+    text = soup.get_text(separator=" ", strip=True)
+
+    # Remove common dynamic patterns
+    text = re.sub(r'\d{10,}', '', text)                    # unix timestamps
+    text = re.sub(r'[a-f0-9]{32,}', '', text)              # session tokens/hashes
+    text = re.sub(r'csrf[^"\'>\s]*', '', text, flags=re.I) # CSRF tokens
+    text = re.sub(r'\s+', ' ', text).strip()               # normalize whitespace
+
+    return text
+
 TARGETS = {
     "WWF Jobs": "https://careers-wwfus.icims.com/jobs/intro?hashed=-435743484",
     "WWF Internships": "https://careers-wwfus.icims.com/jobs/search?ss=1&searchKeyword=internship",
@@ -78,7 +113,6 @@ def check_for_changes():
     new_hashes = {}
     changed = []
 
-    # Launch browser once for all dynamic pages
     with sync_playwright() as p:
         browser = p.chromium.launch(headless=True)
 
@@ -89,7 +123,9 @@ def check_for_changes():
                 else:
                     content = fetch_dynamic(url, browser)
 
-                current_hash = hashlib.md5(content.encode()).hexdigest()
+                # Clean before hashing
+                cleaned = clean_content(content, org)
+                current_hash = hashlib.md5(cleaned.encode()).hexdigest()
                 new_hashes[org] = current_hash
 
                 if org in old_hashes and old_hashes[org] != current_hash:
@@ -112,5 +148,3 @@ def check_for_changes():
     else:
         print("No changes detected.")
 
-if __name__ == "__main__":
-    check_for_changes()
