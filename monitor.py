@@ -147,4 +147,11 @@ def check_for_changes():
         send_email(changed)
     else:
         print("No changes detected.")
+if changed:
+    send_email(changed)
+else:
+    print("No changes detected.")
 
+
+if __name__ == "__main__":
+    check_for_changes()
